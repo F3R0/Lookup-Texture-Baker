@@ -3,8 +3,8 @@ using UnityEditor;
 using System;
 using System.IO;
 
-[CustomEditor(typeof(FunctionLookupBaker))]
-public class FunctionLookupBakerEditor : Editor
+[CustomEditor(typeof(LookupBaker))]
+public class LookupBakerEditor : Editor
 {
     private SerializedProperty myShader;
     private SerializedProperty MethodSelection;
@@ -15,7 +15,7 @@ public class FunctionLookupBakerEditor : Editor
 
     private Material myMaterial;
     private GUIStyle myStyle;
-    private FunctionLookupBaker flb;
+    private LookupBaker flb;
     private Texture2D myTex;
 
     private Rect lastRect;
@@ -33,7 +33,7 @@ public class FunctionLookupBakerEditor : Editor
     public void OnEnable()
     {
         //!target
-        flb = (FunctionLookupBaker)serializedObject.targetObject;
+        flb = (LookupBaker)serializedObject.targetObject;
         myTex = new Texture2D(256, 256);
 
         //alternative to string chk
@@ -55,7 +55,7 @@ public class FunctionLookupBakerEditor : Editor
 
         shaderPath = AssetDatabase.GetAssetPath(myShader.objectReferenceValue);
         myMaterial.shader = AssetDatabase.LoadAssetAtPath<Shader>(shaderPath);
-        inputText = "cos((x - y)*4.0)";
+        inputText = "x";
 
         ReadShader();
     }
@@ -163,7 +163,6 @@ public class FunctionLookupBakerEditor : Editor
         lastRect = new Rect(EditorGUIUtility.currentViewWidth / 2 - 128, controlRect.y, width, height);
         EditorGUI.DrawPreviewTexture(lastRect, tex, mat);
         //EditorGUI.DrawRect()
-
         //SetTextureAreaGizmo(lastRect);
         SetChartLines(drawChart);
         EditorGUILayout.Space();

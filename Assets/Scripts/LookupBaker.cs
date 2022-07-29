@@ -1,27 +1,18 @@
 using UnityEngine;
 using UnityEditor;
-
 using System.IO;
 
-public class FunctionLookupBaker : MonoBehaviour
+public class LookupBaker : MonoBehaviour
 {
     [SerializeField] private Material screen;
     private enum MyEnum { MathFormula, CustomShader };
     [SerializeField] private int deneme;
     [SerializeField] private Shader myShader;
-    [SerializeField] private bool toggleResult = false;
-    [SerializeField] private int myTextureHeight = 65; //default value in compile time
+    [SerializeField] private int myTextureHeight = 256; //default value in compile time
     [SerializeField] private int myTextureWidth = 256;
     [SerializeField] private MyEnum MethodSelection;
 
-
     private RenderTexture rt;
-
-    public void getInfo()
-    {
-
-        Debug.Log(myTextureHeight + "," + myTextureWidth);
-    }
 
     public void bake(string name, int w, int h, Material myMat)
     {

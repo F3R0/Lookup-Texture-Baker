@@ -81,7 +81,7 @@ float noise (in float2 uv) {
 					half x = uv.x;
 					half y = uv.y;
 					half col = x;
-					x = noise(uv);
+					x = noise(uv*4.0);
 
 		
 
