@@ -453,12 +453,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   screen: {fileID: 0}
   deneme: 0
-  myShader: {fileID: 4800000, guid: 41327f6934934824ebb1cbd337425a98, type: 3}
-  toggleResult: 1
+  myShader: {fileID: 4800000, guid: 5cbc4b76d82c64844b73918501b763e7, type: 3}
+  toggleResult: 0
   myTextureHeight: 256
-  testInt: 88
   myTextureWidth: 256
-  MethodSelection: 0
+  MethodSelection: 1
 --- !u!4 &1384927116
 Transform:
   m_ObjectHideFlags: 0

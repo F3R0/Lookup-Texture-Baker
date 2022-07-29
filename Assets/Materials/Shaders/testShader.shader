@@ -50,13 +50,13 @@ Shader "Custom/Quad"
 
 				half4 fragShader(Varyings IN) : SV_Target
 				{
-					half2 uv = IN.uv - 0.5;
-					uv *= 2.0;
+					half2 uv = IN.uv;
+					uv *= 1.0;
 					half x = uv.x;
 					half y = uv.y;
 					half col = x;
 					x = 
-sin(x*4.0) *0.5
+x
 						;
 
 #if defined(RESULT_GRAPH)

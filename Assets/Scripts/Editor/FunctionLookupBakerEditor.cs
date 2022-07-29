@@ -8,13 +8,10 @@ public class FunctionLookupBakerEditor : Editor
 {
     private SerializedProperty myShader;
     private SerializedProperty MethodSelection;
-    private SerializedProperty toggleResult;
     private SerializedProperty myTextureWidth;
     private SerializedProperty myTextureHeight;
     private SerializedProperty screen;
-
     private SerializedProperty testInt;
-
 
     private Material myMaterial;
     private GUIStyle myStyle;
@@ -27,32 +24,31 @@ public class FunctionLookupBakerEditor : Editor
     private string defaultShaderPath;
     private string shaderPath;
     private string inputText;
+    private string fileName;
     private string[] shaderLines;
 
     private bool drawChart;
+    private bool toggleResult;
 
     public void OnEnable()
     {
         //!target
         flb = (FunctionLookupBaker)serializedObject.targetObject;
-        myTex = new Texture2D(256,256);
+        myTex = new Texture2D(256, 256);
 
         //alternative to string chk
         myTextureHeight = serializedObject.FindProperty(nameof(myTextureHeight));
         myTextureWidth = serializedObject.FindProperty(nameof(myTextureWidth));
-        
+
         MethodSelection = serializedObject.FindProperty("MethodSelection");
-        toggleResult = serializedObject.FindProperty("toggleResult");
-        testInt = serializedObject.FindProperty("testInt");
 
         screen = serializedObject.FindProperty("screen");
-        
+
         myMaterial = (Material)screen.objectReferenceValue;
         if (!myMaterial)
         {
             myMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Quad.mat");
         }
-
 
         myShader = serializedObject.FindProperty("myShader");
         defaultShaderPath = "Assets/Materials/Shaders/testShader.shader";
@@ -67,28 +63,22 @@ public class FunctionLookupBakerEditor : Editor
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
-        SetLargeTitle("Function Lookup Baker");
+        SetLargeTitle("Lookup Baker");
         SetInfoText("This tool allows baking lookup tables from " +
-                    "mathematical functions to use in shaders. Type the " +
-                    "function in the text field and click the bake button. ");
+                    "math equations or shader files. Enter an " +
+                    "equation to the text field or select a shader file");
 
-        //EditorGUILayout.PropertyField(screen);
-
-        SetLowerTitle("e.g. \"cos((x - y)*4.0)\"");
+        SetLowerTitle("e.g. \"(2.0 + sin(x*16.0)) /4.0\"");
 
         SetMethodSelection();
-        SetTexturePreview(myTex, myMaterial, myTextureWidth.intValue, myTextureHeight.intValue);
+        SetTexturePreview(myTex, myMaterial, 256, 256);
         SetResultTypeButton("Result as graph");
 
         SetTextureDataInputs();
-     
+        //SetOverlayRect();
         SetBakeButton("Bake");
         serializedObject.ApplyModifiedProperties();
-        //Debug.Log(myShader.objectReferenceValue);
-        //Debug.Log(myMaterial.shader.name);
-        //Debug.Log(shaderPath);
-        //flb.getInfo();
-        Debug.Log(testInt.intValue);
+
     }
 
     private void SetTextureAreaGizmo(Rect rect)
@@ -98,7 +88,7 @@ public class FunctionLookupBakerEditor : Editor
 
     private void SetMethodSelection()
     {
-        
+
         EditorGUILayout.Space();
         EditorGUI.BeginChangeCheck();
         EditorGUILayout.PropertyField(MethodSelection);
@@ -108,9 +98,9 @@ public class FunctionLookupBakerEditor : Editor
             SetRenderButton("Render Formula", true);
         }
         else
-        {   
+        {
             // if GUI.changed
-            
+
             EditorGUILayout.PropertyField(myShader);
             if (EditorGUI.EndChangeCheck())
             {
@@ -155,13 +145,13 @@ public class FunctionLookupBakerEditor : Editor
         EditorGUILayout.Space();
         myStyle = new GUIStyle(EditorStyles.miniButtonMid);
         myStyle.fixedHeight = 32;
-       
+
         if (GUILayout.Button(text, myStyle) && writable)
         {
-                shaderPath = defaultShaderPath;
-                myMaterial.shader = AssetDatabase.LoadAssetAtPath<Shader>(defaultShaderPath);
-                ReadShader();
-                WriteShader();
+            shaderPath = defaultShaderPath;
+            myMaterial.shader = AssetDatabase.LoadAssetAtPath<Shader>(defaultShaderPath);
+            ReadShader();
+            WriteShader();
         }
     }
 
@@ -171,33 +161,39 @@ public class FunctionLookupBakerEditor : Editor
         EditorGUILayout.GetControlRect(false, 10);
         controlRect = EditorGUILayout.GetControlRect(false, 256, myStyle);
         lastRect = new Rect(EditorGUIUtility.currentViewWidth / 2 - 128, controlRect.y, width, height);
-        EditorGUI.DrawPreviewTexture(lastRect, tex, mat, ScaleMode.ScaleAndCrop, 1.0f);
+        EditorGUI.DrawPreviewTexture(lastRect, tex, mat);
         //EditorGUI.DrawRect()
+
         //SetTextureAreaGizmo(lastRect);
-        SetCartesianChart(drawChart);
+        SetChartLines(drawChart);
         EditorGUILayout.Space();
-   
     }
 
-    private void SetCartesianChart(bool drawChart)
+    private void SetChartLines(bool drawChart)
     {
         if (drawChart)
         {
             Handles.color = Color.green;
-            Handles.DrawDottedLine(new Vector2(lastRect.xMin, lastRect.center.y), new Vector2(lastRect.xMax, lastRect.center.y), 0.5f);
-            Handles.DrawDottedLine(new Vector2(lastRect.center.x, lastRect.yMin), new Vector2(lastRect.center.x, lastRect.yMax), 0.35f);
+            Handles.DrawDottedLine(new Vector2(lastRect.xMin, lastRect.yMax), new Vector2(lastRect.xMax, lastRect.yMax), 0.5f);
+            Handles.DrawDottedLine(new Vector2(lastRect.xMin, lastRect.yMin), new Vector2(lastRect.xMin, lastRect.yMax), 0.35f);
             myStyle = new GUIStyle(EditorStyles.miniLabel);
             myStyle.alignment = TextAnchor.MiddleCenter;
             GUI.color = Color.green;
-            GUI.Label(new Rect(lastRect.xMin, lastRect.center.y+4, 30,16), "-1.0", myStyle);
-            GUI.Label(new Rect(lastRect.xMax-30, lastRect.center.y-20, 30,16), "+1.0", myStyle);
-            GUI.Label(new Rect(lastRect.center.x-30, lastRect.yMax-20, 30,16), "-1.0", myStyle);
-            GUI.Label(new Rect(lastRect.center.x, lastRect.yMin, 30,16), "1.0", myStyle);
+            GUI.Label(new Rect(lastRect.xMin, lastRect.yMin + 4, 30, 16), "1.0", myStyle);
+            GUI.Label(new Rect(lastRect.xMin, lastRect.yMax - 20, 30, 16), "0.0", myStyle);
             GUI.color = Color.white;
         }
-
-        
     }
+
+    private void SetOverlayRect()
+    {
+        myStyle.alignment = TextAnchor.LowerLeft;
+        lastRect = new Rect(EditorGUIUtility.currentViewWidth / 2 - 128, controlRect.y, myTextureWidth.intValue, myTextureHeight.intValue);
+
+        SetTextureAreaGizmo(lastRect);
+
+    }
+
     private void SetInfoText(string text)
     {
         myStyle = new GUIStyle(EditorStyles.label);
@@ -215,9 +211,9 @@ public class FunctionLookupBakerEditor : Editor
 
         ///check this
 
-        myTextureHeight.intValue = EditorGUILayout.IntField("tex height", Mathf.Min(myTextureHeight.intValue,256));
-        myTextureWidth.intValue = EditorGUILayout.IntField("tex width", Mathf.Min(myTextureWidth.intValue,256));
-
+        myTextureHeight.intValue = EditorGUILayout.IntField("tex height", Mathf.Clamp(myTextureHeight.intValue, 1, 4096));
+        myTextureWidth.intValue = EditorGUILayout.IntField("tex width", Mathf.Clamp(myTextureWidth.intValue, 1, 4096));
+        fileName = EditorGUILayout.TextField("File Name", fileName, myStyle);
         EditorGUILayout.Space();
     }
 
@@ -226,14 +222,14 @@ public class FunctionLookupBakerEditor : Editor
         EditorGUILayout.Space();
         myStyle = EditorStyles.miniButtonMid;
 
-        toggleResult.boolValue = GUILayout.Toggle(toggleResult.boolValue, "Show Result as Graph", myStyle);
+        toggleResult = GUILayout.Toggle(toggleResult, "Show as 1D Graph", myStyle);
 
-        if (toggleResult.boolValue)
+        if (toggleResult)
         {
             myMaterial.EnableKeyword("RESULT_GRAPH");
             drawChart = true;
-            
-            
+
+
         }
         else
         {
@@ -249,7 +245,7 @@ public class FunctionLookupBakerEditor : Editor
         EditorGUILayout.Space();
         if (GUILayout.Button(text, myStyle))
         {
-            flb.bake("hooop bakeee");
+            flb.bake(fileName, myTextureWidth.intValue, myTextureHeight.intValue, myMaterial);
         }
     }
 
