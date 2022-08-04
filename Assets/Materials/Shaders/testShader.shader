@@ -56,7 +56,7 @@ Shader "Custom/Quad"
 					half y = uv.y;
 					half col = x;
 					x = 
-(1.0 + sin(x*16.0)) / 2.0
+x
 						;
 
 #if defined(RESULT_GRAPH)

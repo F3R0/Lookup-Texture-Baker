@@ -271,11 +271,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   screen: {fileID: 0}
-  deneme: 0
-  myShader: {fileID: 4800000, guid: 9cda45d235b5b7a42b7c2c8e0e877876, type: 3}
-  myTextureHeight: 16
-  myTextureWidth: 16
-  MethodSelection: 1
+  sourceShader: {fileID: 4800000, guid: 9cda45d235b5b7a42b7c2c8e0e877876, type: 3}
+  targetTextureHeight: 256
+  targetTextureWidth: 256
+  MethodSelection: 0
 --- !u!4 &1384927116
 Transform:
   m_ObjectHideFlags: 0

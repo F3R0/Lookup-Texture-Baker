@@ -6,16 +6,16 @@ using System.IO;
 [CustomEditor(typeof(LookupBaker))]
 public class LookupBakerEditor : Editor
 {
-    private SerializedProperty myShader;
+    private SerializedProperty sourceShader;
     private SerializedProperty MethodSelection;
-    private SerializedProperty myTextureWidth;
-    private SerializedProperty myTextureHeight;
+    private SerializedProperty targetTextureWidth;
+    private SerializedProperty targetTextureHeight;
     private SerializedProperty screen;
     private SerializedProperty testInt;
 
     private Material myMaterial;
     private GUIStyle myStyle;
-    private LookupBaker flb;
+    private LookupBaker lookupBaker;
     private Texture2D myTex;
 
     private Rect lastRect;
@@ -33,12 +33,12 @@ public class LookupBakerEditor : Editor
     public void OnEnable()
     {
         //!target
-        flb = (LookupBaker)serializedObject.targetObject;
+        lookupBaker = (LookupBaker)serializedObject.targetObject;
         myTex = new Texture2D(256, 256);
 
         //alternative to string chk
-        myTextureHeight = serializedObject.FindProperty(nameof(myTextureHeight));
-        myTextureWidth = serializedObject.FindProperty(nameof(myTextureWidth));
+        targetTextureHeight = serializedObject.FindProperty(nameof(targetTextureHeight));
+        targetTextureWidth = serializedObject.FindProperty(nameof(targetTextureWidth));
 
         MethodSelection = serializedObject.FindProperty("MethodSelection");
 
@@ -50,10 +50,10 @@ public class LookupBakerEditor : Editor
             myMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Quad.mat");
         }
 
-        myShader = serializedObject.FindProperty("myShader");
+        sourceShader = serializedObject.FindProperty("sourceShader");
         defaultShaderPath = "Assets/Materials/Shaders/testShader.shader";
 
-        shaderPath = AssetDatabase.GetAssetPath(myShader.objectReferenceValue);
+        shaderPath = AssetDatabase.GetAssetPath(sourceShader.objectReferenceValue);
         myMaterial.shader = AssetDatabase.LoadAssetAtPath<Shader>(shaderPath);
         inputText = "x";
 
@@ -101,11 +101,12 @@ public class LookupBakerEditor : Editor
         {
             // if GUI.changed
 
-            EditorGUILayout.PropertyField(myShader);
+            EditorGUILayout.PropertyField(sourceShader);
+            myMaterial.shader = AssetDatabase.LoadAssetAtPath<Shader>(shaderPath);
             if (EditorGUI.EndChangeCheck())
             {
                 Debug.Log("Shader changed");
-                shaderPath = AssetDatabase.GetAssetPath(myShader.objectReferenceValue);
+                shaderPath = AssetDatabase.GetAssetPath(sourceShader.objectReferenceValue);
                 myMaterial.shader = AssetDatabase.LoadAssetAtPath<Shader>(shaderPath);
                 ReadShader();
             }
@@ -187,7 +188,7 @@ public class LookupBakerEditor : Editor
     private void SetOverlayRect()
     {
         myStyle.alignment = TextAnchor.LowerLeft;
-        lastRect = new Rect(EditorGUIUtility.currentViewWidth / 2 - 128, controlRect.y, myTextureWidth.intValue, myTextureHeight.intValue);
+        lastRect = new Rect(EditorGUIUtility.currentViewWidth / 2 - 128, controlRect.y, targetTextureWidth.intValue, targetTextureHeight.intValue);
 
         SetTextureAreaGizmo(lastRect);
 
@@ -210,8 +211,8 @@ public class LookupBakerEditor : Editor
 
         ///check this
 
-        myTextureHeight.intValue = EditorGUILayout.IntField("tex height", Mathf.Clamp(myTextureHeight.intValue, 1, 4096));
-        myTextureWidth.intValue = EditorGUILayout.IntField("tex width", Mathf.Clamp(myTextureWidth.intValue, 1, 4096));
+        targetTextureHeight.intValue = EditorGUILayout.IntField("tex height", Mathf.Clamp(targetTextureHeight.intValue, 1, 4096));
+        targetTextureWidth.intValue = EditorGUILayout.IntField("tex width", Mathf.Clamp(targetTextureWidth.intValue, 1, 4096));
         fileName = EditorGUILayout.TextField("File Name", fileName, myStyle);
         EditorGUILayout.Space();
     }
@@ -244,7 +245,7 @@ public class LookupBakerEditor : Editor
         EditorGUILayout.Space();
         if (GUILayout.Button(text, myStyle))
         {
-            flb.bake(fileName, myTextureWidth.intValue, myTextureHeight.intValue, myMaterial);
+            lookupBaker.Bake(fileName, targetTextureWidth.intValue, targetTextureHeight.intValue, myMaterial);
         }
     }
 

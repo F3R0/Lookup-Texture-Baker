@@ -6,43 +6,40 @@ public class LookupBaker : MonoBehaviour
 {
     [SerializeField] private Material screen;
     private enum MyEnum { MathFormula, CustomShader };
-    [SerializeField] private int deneme;
-    [SerializeField] private Shader myShader;
-    [SerializeField] private int myTextureHeight = 256; //default value in compile time
-    [SerializeField] private int myTextureWidth = 256;
+
+    [SerializeField] private Shader sourceShader;
+    [SerializeField] private int targetTextureHeight;
+    [SerializeField] private int targetTextureWidth;
     [SerializeField] private MyEnum MethodSelection;
 
     private RenderTexture rt;
+    private Texture2D texture;
 
-    public void bake(string name, int w, int h, Material myMat)
+    public void Bake(string name, int width, int height, Material mat)
     {
-
-        if (!string.IsNullOrEmpty(name))
-        {
-            rt = new RenderTexture(w, h, 0);
-            rt.name = name;
-            Graphics.Blit(myMat.mainTexture, rt, myMat);
-
-            RenderTexture.active = rt;
-
-            Texture2D tex = new Texture2D(rt.width, rt.height, TextureFormat.RGB24, false);
-            tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
-
-            RenderTexture.active = null;
-
-            byte[] bytes;
-            bytes = tex.EncodeToPNG();
-
-            string texturePath = "Assets/Baked/" + name + ".png";
-            File.WriteAllBytes(texturePath, bytes);
-            AssetDatabase.ImportAsset(texturePath);
-        }
-        else
+        if (string.IsNullOrEmpty(name))
         {
             Debug.LogError("Enter a filename!");
+            return;
         }
+        rt = new RenderTexture(width, height, 0);
+        Graphics.Blit(mat.mainTexture, rt, mat); //add -1 as a parameter to bake multiple passes
 
+        texture = new Texture2D(rt.width, rt.height, TextureFormat.RGB24, false);
+        texture.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+
+        byte[] bytes = texture.EncodeToPNG();
+
+        string texturePath = $"Assets/Baked/{name}.png";
+        File.WriteAllBytes(texturePath, bytes);
+        AssetDatabase.ImportAsset(texturePath);
+
+        // Dispose all allocated objects
+        RenderTexture.active = null;
+        DestroyImmediate(texture);
+        DestroyImmediate(rt);
     }
+
 
 
 

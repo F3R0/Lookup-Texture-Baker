@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Quad
-  m_Shader: {fileID: 4800000, guid: 9cda45d235b5b7a42b7c2c8e0e877876, type: 3}
+  m_Shader: {fileID: 4800000, guid: 41327f6934934824ebb1cbd337425a98, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _CUSTOMINPUT
