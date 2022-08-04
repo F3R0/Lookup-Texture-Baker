@@ -3,9 +3,9 @@
 # Lookup-Texture-Baker
 A tool to bake math functions or shaders to PNG file.
 
-In most cases, sampling a texture is much faster than procedurally</br>
-calculating some patterns, lookup textures or noises. Thus, I decided </br>
-to create a tool to quickly create and bake these kinds of visuals</br>
-into a texture file. The tool allows you to enter some math functions</br>
-as an input or select a custom shader file to visualize its result on</br>
-the inspector GUI and bake it into a PNG texture file.
+<p>In most cases, sampling a texture is much faster than procedurally
+calculating some patterns, lookup textures or noises. Thus, I decided 
+to create a tool to quickly create and bake these kinds of visuals
+into a texture file. The tool allows you to enter some math functions
+as an input or select a custom shader file to visualize its result on
+the inspector GUI and bake it into a PNG texture file.</p>
