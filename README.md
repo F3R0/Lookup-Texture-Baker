@@ -1,4 +1,4 @@
-![image](https://user-images.githubusercontent.com/35713203/182944092-f4e4460d-99e9-40b0-8117-a6bf9eda4b3e.png)
+![lookup](https://user-images.githubusercontent.com/35713203/182974991-b8df7f39-6d29-4803-a57b-3b7ed8aaaf5f.gif)
 
 # Lookup-Texture-Baker
 A tool to bake math functions or shaders to PNG file.
